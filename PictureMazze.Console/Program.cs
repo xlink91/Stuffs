@@ -31,7 +31,17 @@ namespace PictureMazze.Console
 
     internal class Walker
     {
-        private int[][] moves = new[] { new[] { 0, 1 }, new[] { 1, 0 }, new[] { 0, -1 }, new[] { -1, 0 } };
+        private int[][] moves = new[] 
+        {
+            new[] { 0, 1 },
+            new[] { 1, 0 },
+            new[] { 0, -1 },
+            new[] { -1, 0 },
+            new[] { -1, -1 },
+            new[] { 1, 1 },
+            new[] { -1, 1 },
+            new[] { 1, -1 }
+        };
         Random rnd = new Random();
 
         public int[][] FindPath(int[][] Matrix, int xi = 0, int yi = 0)
@@ -52,20 +62,19 @@ namespace PictureMazze.Console
                 int[] pos = qt.Dequeue();
                 if (pos[0] == mx - 1 && pos[1] == my - 1)
                     break;
-                for(int i = -1; i < 2; ++i)
-                    for(int j = -1; j < 2; ++j)
-                    {
-                        int nx = pos[0] + i;
-                        int ny = pos[1] + j;
-                        if (i * j != 0 || !CheckBound(nx, ny, mx, my) || Matrix[nx][ny] != 0)
-                            continue;
+                for(int i = 0; i < moves.Length; ++i)
+                {
+                    int nx = pos[0] + moves[i][0];
+                    int ny = pos[1] + moves[i][1];
+                    if (!CheckBound(nx, ny, mx, my) || Matrix[nx][ny] != 0)
+                        continue;
                         
-                        if(D[nx][ny] > D[pos[0]][pos[1]] + 1)
-                        {
-                            D[nx][ny] = D[pos[0]][pos[1]] + 1;
-                            qt.Enqueue(new[] { nx, ny });
-                        }
+                    if(D[nx][ny] > D[pos[0]][pos[1]] + 1)
+                    {
+                        D[nx][ny] = D[pos[0]][pos[1]] + 1;
+                        qt.Enqueue(new[] { nx, ny });
                     }
+                }
             }
 
             int xf = mx - 1;
@@ -87,12 +96,12 @@ namespace PictureMazze.Console
                 return true;
 
             //this is just to get a more smooth walk instead a linear one
-            int ri = rnd.Next() % 4;
+            int ri = rnd.Next() % moves.Length;
             int direccion = rnd.Next() % 2 == 0 ? 1 : -1;
 
-            for(int i = 0; i < 4; i += direccion)
+            for(int i = 0; i < moves.Length; i += direccion)
             {
-                int ni = (i + ri + 4) % 4;
+                int ni = (i + ri + moves.Length) % moves.Length;
                 int nx = x + moves[ni][0];
                 int ny = y + moves[ni][1];
                 if (CheckBound(nx, ny, mx, my) && D[nx][ny] == D[x][y] - 1)
